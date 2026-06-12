@@ -27,7 +27,9 @@
   let map;
   let routeLoaded = false;
   let userLocation = null;
-  let scrollFrame = null;
+  let targetProgress = 0;
+  let smoothedProgress = 0;
+  let dampingFrame = null;
 
   createScrollChapters(config.chapters);
   initMap();
@@ -272,24 +274,47 @@
   }
 
   function observeScrollProgress() {
-    updateCameraFromScroll();
-    window.addEventListener("scroll", requestCameraUpdate, { passive: true });
-    window.addEventListener("resize", requestCameraUpdate);
+    targetProgress = getScrollProgress();
+    smoothedProgress = targetProgress;
+    updateCameraForProgress(smoothedProgress);
+    window.addEventListener("scroll", updateTargetProgress, { passive: true });
+    window.addEventListener("resize", updateTargetProgress);
   }
 
-  function requestCameraUpdate() {
-    if (scrollFrame) {
+  function updateTargetProgress() {
+    targetProgress = getScrollProgress();
+    startDampedCameraLoop();
+  }
+
+  function startDampedCameraLoop() {
+    if (dampingFrame) {
       return;
     }
 
-    scrollFrame = requestAnimationFrame(() => {
-      scrollFrame = null;
-      updateCameraFromScroll();
-    });
+    dampingFrame = requestAnimationFrame(stepDampedCamera);
   }
 
-  function updateCameraFromScroll() {
-    const progress = getScrollProgress();
+  function stepDampedCamera() {
+    const distance = targetProgress - smoothedProgress;
+    const damping = 0.16;
+
+    smoothedProgress += distance * damping;
+
+    if (Math.abs(distance) < 0.0007) {
+      smoothedProgress = targetProgress;
+    }
+
+    updateCameraForProgress(smoothedProgress);
+
+    if (smoothedProgress !== targetProgress) {
+      dampingFrame = requestAnimationFrame(stepDampedCamera);
+      return;
+    }
+
+    dampingFrame = null;
+  }
+
+  function updateCameraForProgress(progress) {
     const camera = getInterpolatedCamera(progress);
     const activeChapter = getActiveChapter(progress);
     const progressBar = document.querySelector(".scroll-progress span");

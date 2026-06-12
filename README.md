@@ -108,8 +108,8 @@ The map camera is scroll-driven. It first zooms out from the user's starting loc
 
 ```css
 .chapter {
-  min-height: 150vh;
-  min-height: 150svh;
+  min-height: 320vh;
+  min-height: 320svh;
 }
 ```
 

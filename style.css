@@ -86,8 +86,8 @@ body.final-mode #map {
 }
 
 .chapter {
-  min-height: 150vh;
-  min-height: 150svh;
+  min-height: 320vh;
+  min-height: 320svh;
   pointer-events: none;
 }
 
