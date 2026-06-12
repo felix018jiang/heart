@@ -30,6 +30,7 @@
   let targetProgress = 0;
   let smoothedProgress = 0;
   let dampingFrame = null;
+  const selectedHeartRoute = chooseHeartRoute();
 
   createScrollChapters(config.chapters);
   initMap();
@@ -71,7 +72,6 @@
       addUserLocationMarker();
       await addRouteSourceAndLayer();
       observeScrollProgress();
-      updateCameraFromScroll();
     });
   }
 
@@ -88,6 +88,27 @@
     });
 
     story.appendChild(fragment);
+  }
+
+  function chooseHeartRoute() {
+    const routes = config.heartRoutes || [];
+
+    if (!routes.length) {
+      return {
+        id: "fallback-heart",
+        name: "Heart Island",
+        travelLocations: [],
+        finalLocation: config.chapters[config.chapters.length - 1].location
+      };
+    }
+
+    // Optional testing helper: open index.html?route=trnovacko-lake to force
+    // one destination while tuning its final camera position.
+    const routeIdFromUrl = new URLSearchParams(window.location.search).get("route");
+    const forcedRoute = routes.find((item) => item.id === routeIdFromUrl);
+    const route = forcedRoute || routes[Math.floor(Math.random() * routes.length)];
+    document.body.dataset.selectedHeartRoute = route.id;
+    return route;
   }
 
   function cleanBasemapOverlays() {
@@ -339,7 +360,7 @@
   function getInterpolatedCamera(progress) {
     const chapters = config.chapters;
     const startLocation = chapters[0].location;
-    const finalLocation = chapters[chapters.length - 1].location;
+    const finalLocation = selectedHeartRoute.finalLocation;
     const zoomOutEnd = 0.28;
     const arrivalProgress = 0.72;
     const travelZoom = 2.85;
@@ -360,6 +381,7 @@
     // Second: move toward the heart island while staying zoomed out.
     if (progress < arrivalProgress) {
       const travelProgress = (progress - zoomOutEnd) / (arrivalProgress - zoomOutEnd);
+      const routeTravelLocations = selectedHeartRoute.travelLocations || [];
       const travelLocations = [
         {
           ...chapters[1].location,
@@ -368,7 +390,7 @@
           pitch: 18,
           bearing: -10
         },
-        chapters[2].location,
+        ...routeTravelLocations,
         {
           ...chapters[3].location,
           center: finalLocation.center,

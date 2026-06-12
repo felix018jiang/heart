@@ -30,10 +30,175 @@ window.config = {
   useCurrentLocationForCover: true,
   currentLocationZoom: 10.4,
 
-  heartIsland: {
-    name: "Galesnjak Heart Island",
-    coordinates: [15.38365, 43.978122]
-  },
+  // One route is chosen randomly on every page load. Each final location is
+  // framed so the heart-shaped island/lake sits between "I" and "you".
+  heartRoutes: [
+    {
+      id: "galesnjak",
+      name: "Galesnjak Heart Island",
+      kind: "island",
+      coordinates: [15.38365, 43.978122],
+      travelLocations: [
+        {
+          center: [54.0, 43.0],
+          zoom: 2.75,
+          pitch: 22,
+          bearing: -18
+        },
+        {
+          center: [18.2, 44.2],
+          zoom: 6.1,
+          pitch: 18,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [15.38365, 43.97755],
+        zoom: 14.7,
+        pitch: 18,
+        bearing: 0
+      }
+    },
+    {
+      id: "tavarua",
+      name: "Tavarua Island",
+      kind: "island",
+      coordinates: [177.201791, -17.857702],
+      travelLocations: [
+        {
+          center: [118.0, 8.0],
+          zoom: 2.6,
+          pitch: 20,
+          bearing: 12
+        },
+        {
+          center: [166.0, -13.0],
+          zoom: 5.4,
+          pitch: 16,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [177.201791, -17.85805],
+        zoom: 15.1,
+        pitch: 12,
+        bearing: 0
+      }
+    },
+    {
+      id: "lake-toyoni",
+      name: "Lake Toyoni",
+      kind: "lake",
+      coordinates: [143.271675, 42.089445],
+      travelLocations: [
+        {
+          center: [122.0, 44.0],
+          zoom: 2.7,
+          pitch: 20,
+          bearing: 8
+        },
+        {
+          center: [142.0, 42.2],
+          zoom: 6.0,
+          pitch: 16,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [143.271675, 42.08905],
+        zoom: 14.65,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      // Added from the Nissho Peninsula post about 豐似湖 / 豊似湖.
+      // The article describes it as a heart-shaped emerald lake in Erimo,
+      // Hokkaido. Coordinates are [longitude, latitude].
+      id: "toyoni-lake-nissho",
+      name: "Toyoni Lake",
+      kind: "lake",
+      coordinates: [143.271675, 42.089445],
+      travelLocations: [
+        {
+          center: [128.0, 44.0],
+          zoom: 2.65,
+          pitch: 20,
+          bearing: 6
+        },
+        {
+          center: [139.2, 42.8],
+          zoom: 5.4,
+          pitch: 16,
+          bearing: 4
+        },
+        {
+          center: [143.05, 42.05],
+          zoom: 8.7,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [143.271675, 42.08905],
+        zoom: 14.65,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "trnovacko-lake",
+      name: "Trnovacko Lake",
+      kind: "lake",
+      coordinates: [18.7211664, 43.2523773],
+      travelLocations: [
+        {
+          center: [60.0, 35.0],
+          zoom: 2.5,
+          pitch: 20,
+          bearing: -8
+        },
+        {
+          center: [20.0, 43.0],
+          zoom: 5.6,
+          pitch: 16,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [18.7268, 43.25205],
+        zoom: 14.8,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "calvaresc",
+      name: "Lagh de Calvaresc",
+      kind: "lake",
+      coordinates: [9.1582239, 46.3657122],
+      travelLocations: [
+        {
+          center: [58.0, 45.0],
+          zoom: 2.55,
+          pitch: 20,
+          bearing: -8
+        },
+        {
+          center: [12.0, 46.0],
+          zoom: 5.8,
+          pitch: 16,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [9.1582239, 46.36545],
+        zoom: 15.0,
+        pitch: 14,
+        bearing: 0
+      }
+    }
+  ],
 
   // Route data is kept in the project for later use, but the current visual
   // version hides the red line entirely.
@@ -126,5 +291,6 @@ window.config = {
       showRoute: false,
       finalMode: true
     }
+
   ]
 };

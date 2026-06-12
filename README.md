@@ -66,16 +66,35 @@ This works on `localhost` and HTTPS deployments. If the visitor denies permissio
 
 ## Change The Final Heart Island
 
-The final destination is configured in `config.js`:
+The final destination is selected randomly on every page load from `heartRoutes` in `config.js`:
 
 ```js
-heartIsland: {
-  name: "Galesnjak Heart Island",
-  coordinates: [15.384624, 43.978725]
-}
+heartRoutes: [
+  {
+    id: "galesnjak",
+    name: "Galesnjak Heart Island",
+    kind: "island",
+    coordinates: [15.38365, 43.978122],
+    travelLocations: [...],
+    finalLocation: {...}
+  }
+]
 ```
 
-The final marker and last camera step use the same coordinate. Mapbox coordinates are always `[longitude, latitude]`.
+Current random destinations:
+
+- `galesnjak`: heart-shaped island in Croatia
+- `tavarua`: heart-shaped island in Fiji
+- `lake-toyoni`: heart-shaped lake in Hokkaido, Japan
+- `toyoni-lake-nissho`: Toyoni Lake / 豐似湖 in Erimo, Hokkaido, added from the Nissho Peninsula guide
+- `trnovacko-lake`: heart-shaped glacial lake in the Montenegro / Bosnia border area
+- `calvaresc`: heart-shaped alpine lake in Switzerland
+
+`travelLocations` controls the route the map camera follows after zooming out from the user's location. `finalLocation` controls the final close-up frame, where the heart-shaped island/lake should sit between `I` and `you`.
+
+Mapbox coordinates are always `[longitude, latitude]`.
+
+When tuning one destination, add `?route=destination-id` to the URL. For example, `index.html?route=trnovacko-lake` forces that destination instead of choosing randomly.
 
 ## Change The Camera Journey
 
@@ -104,7 +123,7 @@ finalMode: true
 
 That enables the pink final glow. The current version does not show a heart marker.
 
-The map camera is scroll-driven. It first zooms out from the user's starting location, then moves the map center to the heart island while staying relatively zoomed out, then keeps the center on the island and gradually zooms in. To make the journey slower or faster, adjust `.chapter` height in `style.css`:
+The map camera is scroll-driven. It first zooms out from the user's starting location, then follows the randomly selected route toward that page load's heart-shaped island/lake, then keeps the center on the selected destination and gradually zooms in. To make the journey slower or faster, adjust `.chapter` height in `style.css`:
 
 ```css
 .chapter {
