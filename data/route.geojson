@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "I to Galesnjak Heart Island",
+        "description": "Replace this sample path with your own journey if needed."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [118.8, 32.05],
+          [101.0, 39.0],
+          [86.0, 43.8],
+          [69.2, 41.3],
+          [52.0, 42.0],
+          [39.0, 41.0],
+          [28.9, 41.0],
+          [21.0, 43.8],
+          [15.38365, 43.978122]
+        ]
+      }
+    }
+  ]
+}

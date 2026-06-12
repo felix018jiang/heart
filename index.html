@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>I Love You So - Scroll Map Story</title>
+
+    <link rel="preconnect" href="https://api.mapbox.com" />
+    <link rel="preconnect" href="https://events.mapbox.com" />
+
+    <!-- Mapbox GL JS. Replace only the access token in config.js. -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <noscript>
+      This map story needs JavaScript enabled to run.
+    </noscript>
+
+    <!-- Fixed full-screen map layer. -->
+    <main id="map" aria-label="Map showing the love story route"></main>
+
+    <!-- Persistent words inspired by the reference video. -->
+    <div class="love-overlay" aria-hidden="true">
+      <span class="love-word love-word-i">I</span>
+      <span class="love-word love-word-you">you</span>
+    </div>
+
+    <div class="scroll-progress" aria-hidden="true">
+      <span></span>
+    </div>
+
+    <!-- Story layer. Chapters are generated from config.js by story.js. -->
+    <section id="story" aria-label="I Love You So scroll story"></section>
+
+    <script src="config.js"></script>
+    <script src="story.js"></script>
+  </body>
+</html>
