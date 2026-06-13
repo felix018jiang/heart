@@ -1,4 +1,4 @@
-# I Love You So - Scroll Map Story
+# Heart - Scroll Map Story
 
 A static Mapbox GL JS scroll story styled like a vertical map video.
 
