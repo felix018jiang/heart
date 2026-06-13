@@ -14,7 +14,7 @@
 
 window.config = {
   // Mapbox public token. Use a pk.* token, never an sk.* secret token.
-  accessToken: "pk.eyJ1IjoieXV0b25namlhbmcwMTgiLCJhIjoiY21xYWhsd21oMDZkYzJzcTNuNG9rMDJlcyJ9.Hmgts8v749ewtxFUbGb8CA",
+  accessToken: "pk.eyJ1IjoieXV0b25namlhbmcwMTgiLCJhIjoiY21xY2Qya3p4MG5qeDJycXMzdGE2c3RsdyJ9.HUl23qR7BtDyBfr-57wkxw",
 
   // Satellite-streets is the stable Mapbox satellite style for this page.
   style: "mapbox://styles/mapbox/satellite-streets-v12",
