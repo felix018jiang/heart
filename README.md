@@ -22,7 +22,7 @@ A static Mapbox GL JS scroll story styled like a vertical map video.
 Start the server from this project folder, not from your Home folder:
 
 ```bash
-cd "/Users/tone/Documents/claude/Scroll Map Story"
+cd "/local_directory"
 python3 -m http.server 8080
 ```
 
