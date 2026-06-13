@@ -197,6 +197,102 @@ window.config = {
         pitch: 14,
         bearing: 0
       }
+    },
+    {
+      id: "etang-baker",
+      name: "Etang Baker",
+      kind: "lake",
+      coordinates: [-72.39294, 45.20764],
+      travelLocations: [
+        {
+          center: [-125.0, 48.0],
+          zoom: 2.45,
+          pitch: 20,
+          bearing: 12
+        },
+        {
+          center: [-86.0, 47.0],
+          zoom: 4.4,
+          pitch: 16,
+          bearing: 6
+        },
+        {
+          center: [-73.5, 45.45],
+          zoom: 7.7,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [-72.39294, 45.20764],
+        zoom: 15.0,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "lough-ouler",
+      name: "Lough Ouler",
+      kind: "lake",
+      coordinates: [-6.378056, 53.064167],
+      travelLocations: [
+        {
+          center: [-35.0, 51.0],
+          zoom: 2.55,
+          pitch: 20,
+          bearing: -8
+        },
+        {
+          center: [-10.0, 53.0],
+          zoom: 5.3,
+          pitch: 16,
+          bearing: -4
+        },
+        {
+          center: [-6.45, 53.12],
+          zoom: 8.5,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [-6.373708, 53.05963],
+        zoom: 14.75,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "love-lake-al-qudra",
+      name: "Love Lake Al Qudra",
+      kind: "lake",
+      coordinates: [55.407222, 24.838333],
+      travelLocations: [
+        {
+          center: [92.0, 31.0],
+          zoom: 2.5,
+          pitch: 20,
+          bearing: 10
+        },
+        {
+          center: [62.0, 26.0],
+          zoom: 5.2,
+          pitch: 16,
+          bearing: 4
+        },
+        {
+          center: [55.8, 24.9],
+          zoom: 8.4,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [55.407222, 24.838333],
+        zoom: 14.25,
+        pitch: 14,
+        bearing: 0
+      }
     }
   ],
 

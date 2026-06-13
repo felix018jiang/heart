@@ -89,12 +89,17 @@ Current random destinations:
 - `toyoni-lake-nissho`: Toyoni Lake / 豐似湖 in Erimo, Hokkaido, added from the Nissho Peninsula guide
 - `trnovacko-lake`: heart-shaped glacial lake in the Montenegro / Bosnia border area
 - `calvaresc`: heart-shaped alpine lake in Switzerland
+- `etang-baker`: Etang Baker in Memphremagog Regional County Municipality, Quebec, Canada
+- `lough-ouler`: Lough Ouler in Ireland
+- `love-lake-al-qudra`: Love Lake / Al Qudra in Dubai, United Arab Emirates
 
 `travelLocations` controls the route the map camera follows after zooming out from the user's location. `finalLocation` controls the final close-up frame, where the heart-shaped island/lake should sit between `I` and `you`.
 
 Mapbox coordinates are always `[longitude, latitude]`.
 
 When tuning one destination, add `?route=destination-id` to the URL. For example, `index.html?route=trnovacko-lake` forces that destination instead of choosing randomly.
+
+The small button in the lower-right corner switches to the next destination in `heartRoutes` without reloading the map. It uses the current scroll position, so you can switch while staying on the ending view or anywhere in the journey.
 
 ## Change The Camera Journey
 

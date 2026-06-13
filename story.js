@@ -8,6 +8,7 @@
 (function () {
   const TOKEN_PLACEHOLDER = "YOUR_MAPBOX_ACCESS_TOKEN_HERE";
   const routeColor = "#ff6b8a";
+  const destinationSwitchThreshold = 0.985;
 
   if (!window.config) {
     showFatalMessage("Missing config.js. Make sure config.js loads before story.js.");
@@ -30,9 +31,12 @@
   let targetProgress = 0;
   let smoothedProgress = 0;
   let dampingFrame = null;
-  const selectedHeartRoute = chooseHeartRoute();
+  let isResettingStory = false;
+  let selectedHeartRouteIndex = -1;
+  let selectedHeartRoute = chooseHeartRoute();
 
   createScrollChapters(config.chapters);
+  setupDestinationSwitch();
   initMap();
 
   async function initMap() {
@@ -105,10 +109,59 @@
     // Optional testing helper: open index.html?route=trnovacko-lake to force
     // one destination while tuning its final camera position.
     const routeIdFromUrl = new URLSearchParams(window.location.search).get("route");
-    const forcedRoute = routes.find((item) => item.id === routeIdFromUrl);
-    const route = forcedRoute || routes[Math.floor(Math.random() * routes.length)];
+    const forcedRouteIndex = routes.findIndex((item) => item.id === routeIdFromUrl);
+    selectedHeartRouteIndex =
+      forcedRouteIndex >= 0 ? forcedRouteIndex : Math.floor(Math.random() * routes.length);
+    const route = routes[selectedHeartRouteIndex];
     document.body.dataset.selectedHeartRoute = route.id;
     return route;
+  }
+
+  function setupDestinationSwitch() {
+    const button = document.getElementById("next-destination");
+
+    if (!button) {
+      return;
+    }
+
+    const routes = config.heartRoutes || [];
+
+    if (routes.length < 2) {
+      button.hidden = true;
+      return;
+    }
+
+    updateDestinationButtonLabel(button);
+
+    button.addEventListener("click", () => {
+      selectedHeartRouteIndex = (selectedHeartRouteIndex + 1) % routes.length;
+      selectedHeartRoute = routes[selectedHeartRouteIndex];
+      document.body.dataset.selectedHeartRoute = selectedHeartRoute.id;
+      updateDestinationButtonLabel(button);
+
+      if (map) {
+        resetStoryToStart();
+      }
+    });
+  }
+
+  function updateDestinationButtonLabel(button) {
+    const nextRoute = getNextHeartRoute();
+    const nextName = nextRoute ? nextRoute.name : "next destination";
+    const label = `Switch to ${nextName}`;
+
+    button.setAttribute("aria-label", label);
+    button.title = label;
+  }
+
+  function getNextHeartRoute() {
+    const routes = config.heartRoutes || [];
+
+    if (!routes.length) {
+      return null;
+    }
+
+    return routes[(selectedHeartRouteIndex + 1) % routes.length];
   }
 
   function cleanBasemapOverlays() {
@@ -303,6 +356,10 @@
   }
 
   function updateTargetProgress() {
+    if (isResettingStory) {
+      return;
+    }
+
     targetProgress = getScrollProgress();
     startDampedCameraLoop();
   }
@@ -337,10 +394,27 @@
 
   function updateCameraForProgress(progress) {
     const camera = getInterpolatedCamera(progress);
-    const activeChapter = getActiveChapter(progress);
-    const progressBar = document.querySelector(".scroll-progress span");
 
     map.jumpTo(camera);
+    updateProgressState(progress);
+  }
+
+  function easeCameraForProgress(progress) {
+    const camera = getInterpolatedCamera(progress);
+
+    map.easeTo({
+      ...camera,
+      duration: 850,
+      easing: smoothstep,
+      essential: true
+    });
+
+    updateProgressState(progress);
+  }
+
+  function updateProgressState(progress) {
+    const activeChapter = getActiveChapter(progress);
+    const progressBar = document.querySelector(".scroll-progress span");
 
     if (progressBar) {
       progressBar.style.transform = `scaleX(${progress})`;
@@ -348,7 +422,32 @@
 
     document.body.dataset.activeChapter = activeChapter.id;
     document.body.classList.toggle("final-mode", Boolean(activeChapter.finalMode));
+    document.body.classList.toggle(
+      "destination-switch-visible",
+      progress >= destinationSwitchThreshold
+    );
     updateRoute(Boolean(activeChapter.showRoute));
+  }
+
+  function resetStoryToStart() {
+    if (dampingFrame) {
+      cancelAnimationFrame(dampingFrame);
+      dampingFrame = null;
+    }
+
+    isResettingStory = true;
+    targetProgress = 0;
+    smoothedProgress = 0;
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto"
+    });
+    updateCameraForProgress(0);
+
+    requestAnimationFrame(() => {
+      isResettingStory = false;
+    });
   }
 
   function getScrollProgress() {
@@ -362,60 +461,68 @@
     const startLocation = chapters[0].location;
     const finalLocation = selectedHeartRoute.finalLocation;
     const zoomOutEnd = 0.28;
-    const arrivalProgress = 0.72;
+    const arrivalProgress = 0.74;
     const travelZoom = 2.85;
+    const finalZoom = finalLocation.zoom;
+    const startPitch = startLocation.pitch || 0;
+    const finalPitch = finalLocation.pitch || 0;
+    const finalBearing = finalLocation.bearing || 0;
 
-    // First: stay at the user's location and zoom out. This makes the
-    // movement feel like pulling back from the starting point before travel.
+    // First: pull back from the user's location once. After this point the
+    // zoom only increases toward the final destination, so route waypoints
+    // cannot make the camera bounce between zooming in and zooming out.
     if (progress < zoomOutEnd) {
-      const zoomOutProgress = progress / zoomOutEnd;
+      const zoomOutProgress = smoothstep(progress / zoomOutEnd);
 
       return {
         center: startLocation.center,
         zoom: lerp(startLocation.zoom, travelZoom, zoomOutProgress),
-        pitch: lerp(startLocation.pitch || 0, 18, zoomOutProgress),
+        pitch: lerp(startPitch, 14, zoomOutProgress),
         bearing: lerp(startLocation.bearing || 0, -10, zoomOutProgress)
       };
     }
 
-    // Second: move toward the heart island while staying zoomed out.
+    const zoomInProgress = smoothstep((progress - zoomOutEnd) / (1 - zoomOutEnd));
+    const zoom = lerp(travelZoom, finalZoom, zoomInProgress);
+    const pitch = lerp(14, finalPitch, zoomInProgress);
+    const bearing = lerp(-10, finalBearing, zoomInProgress);
+
+    // Second: move toward the destination. Route waypoints control only the
+    // center path; zoom, pitch, and bearing stay on the stable curve above.
     if (progress < arrivalProgress) {
-      const travelProgress = (progress - zoomOutEnd) / (arrivalProgress - zoomOutEnd);
+      const travelProgress = smoothstep(
+        (progress - zoomOutEnd) / (arrivalProgress - zoomOutEnd)
+      );
       const routeTravelLocations = selectedHeartRoute.travelLocations || [];
       const travelLocations = [
         {
-          ...chapters[1].location,
-          center: startLocation.center,
-          zoom: travelZoom,
-          pitch: 18,
-          bearing: -10
+          center: startLocation.center
         },
         ...routeTravelLocations,
         {
-          ...chapters[3].location,
-          center: finalLocation.center,
-          zoom: 6.1,
-          pitch: 18,
-          bearing: finalLocation.bearing || 0
+          center: finalLocation.center
         }
       ];
 
-      return interpolateCameraPath(travelLocations, travelProgress);
+      return {
+        center: interpolateCenterPath(travelLocations, travelProgress),
+        zoom,
+        pitch,
+        bearing
+      };
     }
 
-    // Second: keep the map centered on the heart island and gradually zoom in.
-    const zoomProgress = (progress - arrivalProgress) / (1 - arrivalProgress);
-    const startZoom = 6.1;
-
+    // Final: keep the destination centered while the same zoom curve continues
+    // into the close-up.
     return {
       center: finalLocation.center,
-      zoom: lerp(startZoom, finalLocation.zoom, zoomProgress),
-      pitch: lerp(18, finalLocation.pitch || 0, zoomProgress),
-      bearing: finalLocation.bearing || 0
+      zoom,
+      pitch,
+      bearing
     };
   }
 
-  function interpolateCameraPath(locations, progress) {
+  function interpolateCenterPath(locations, progress) {
     const scaled = progress * (locations.length - 1);
     const startIndex = Math.min(Math.floor(scaled), locations.length - 2);
     const endIndex = startIndex + 1;
@@ -423,15 +530,10 @@
     const start = locations[startIndex];
     const end = locations[endIndex];
 
-    return {
-      center: [
-        lerp(start.center[0], end.center[0], t),
-        lerp(start.center[1], end.center[1], t)
-      ],
-      zoom: lerp(start.zoom, end.zoom, t),
-      pitch: lerp(start.pitch || 0, end.pitch || 0, t),
-      bearing: lerp(start.bearing || 0, end.bearing || 0, t)
-    };
+    return [
+      lerp(start.center[0], end.center[0], t),
+      lerp(start.center[1], end.center[1], t)
+    ];
   }
 
   function getActiveChapter(progress) {
@@ -458,6 +560,11 @@
 
   function lerp(start, end, t) {
     return start + (end - start) * t;
+  }
+
+  function smoothstep(value) {
+    const t = clamp(value, 0, 1);
+    return t * t * (3 - 2 * t);
   }
 
   function clamp(value, min, max) {

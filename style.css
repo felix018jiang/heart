@@ -157,6 +157,69 @@ body.final-mode .love-word-you {
   transform-origin: left center;
 }
 
+.destination-switch {
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  bottom: calc(8.75rem + env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.96);
+  background: rgba(12, 18, 28, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(0.5rem) scale(0.96);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.destination-switch span {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.destination-switch:hover {
+  background: rgba(12, 18, 28, 0.62);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+.destination-switch:active {
+  transform: translateX(-50%) translateY(0) scale(0.96);
+}
+
+.destination-switch:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
+}
+
+body.destination-switch-visible .destination-switch {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+body.destination-switch-visible .destination-switch:hover {
+  transform: translateX(-50%) translateY(-1px);
+}
+
+body.destination-switch-visible .destination-switch:active {
+  transform: translateX(-50%) translateY(0) scale(0.96);
+}
+
 .user-location-marker {
   width: 1.35rem;
   height: 1.35rem;
@@ -224,6 +287,10 @@ body.final-mode .love-word-you {
 
   .scroll-progress {
     bottom: 4rem;
+  }
+
+  .destination-switch {
+    bottom: 6.25rem;
   }
 }
 
