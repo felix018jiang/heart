@@ -37,7 +37,7 @@ If you see `Directory listing for /` with folders like `.codex`, `.anaconda`, `D
 If port `8080` is busy:
 
 ```bash
-cd "/Users/tone/Documents/claude/Scroll Map Story"
+cd "/local_directory"
 python3 -m http.server 8090
 ```
 
@@ -205,7 +205,7 @@ This is a static site. You can deploy it to GitHub Pages, Vercel, Netlify, or an
 You started the local server from the wrong folder. Use:
 
 ```bash
-cd "/Users/tone/Documents/claude/Scroll Map Story"
+cd "/local_directory"
 python3 -m http.server 8080
 ```
 
