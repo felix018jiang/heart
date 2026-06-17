@@ -92,6 +92,10 @@ Current random destinations:
 - `etang-baker`: Etang Baker in Memphremagog Regional County Municipality, Quebec, Canada
 - `lough-ouler`: Lough Ouler in Ireland
 - `love-lake-al-qudra`: Love Lake / Al Qudra in Dubai, United Arab Emirates
+- `new-caledonia-destination`: destination at `-20.937603854169495, 164.65847015554456`
+- `caucasus-destination`: destination at `40.93641908838831, 41.20100197337855`
+- `patagonia-destination`: destination at `-39.777098887596196, -71.86852615073488`
+- `korea-destination`: destination at `34.7819711349546, 127.5575446478488`
 
 `travelLocations` controls the route the map camera follows after zooming out from the user's location. `finalLocation` controls the final close-up frame, where the heart-shaped island/lake should sit between `I` and `you`.
 

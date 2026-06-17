@@ -293,6 +293,134 @@ window.config = {
         pitch: 14,
         bearing: 0
       }
+    },
+    {
+      id: "new-caledonia-destination",
+      name: "New Caledonia Destination",
+      kind: "lake",
+      coordinates: [164.65847015554456, -20.937603854169495],
+      travelLocations: [
+        {
+          center: [118.0, -7.0],
+          zoom: 2.5,
+          pitch: 20,
+          bearing: 10
+        },
+        {
+          center: [152.0, -18.0],
+          zoom: 5.0,
+          pitch: 16,
+          bearing: 4
+        },
+        {
+          center: [164.2, -20.8],
+          zoom: 8.2,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [164.65847015554456, -20.937603854169495],
+        zoom: 15.35,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "caucasus-destination",
+      name: "Caucasus Destination",
+      kind: "lake",
+      coordinates: [41.20100197337855, 40.93641908838831],
+      travelLocations: [
+        {
+          center: [82.0, 39.0],
+          zoom: 2.55,
+          pitch: 20,
+          bearing: -8
+        },
+        {
+          center: [55.0, 41.0],
+          zoom: 5.1,
+          pitch: 16,
+          bearing: -4
+        },
+        {
+          center: [42.0, 40.9],
+          zoom: 8.3,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [41.20100197337855, 40.93641908838831],
+        zoom: 15.35,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "patagonia-destination",
+      name: "Patagonia Destination",
+      kind: "lake",
+      coordinates: [-71.86852615073488, -39.777098887596196],
+      travelLocations: [
+        {
+          center: [-118.0, -18.0],
+          zoom: 2.45,
+          pitch: 20,
+          bearing: -8
+        },
+        {
+          center: [-86.0, -34.0],
+          zoom: 4.7,
+          pitch: 16,
+          bearing: -4
+        },
+        {
+          center: [-72.6, -39.3],
+          zoom: 8.2,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [-71.8668, -39.777098887596196],
+        zoom: 15.35,
+        pitch: 14,
+        bearing: 0
+      }
+    },
+    {
+      id: "korea-destination",
+      name: "Korea Destination",
+      kind: "lake",
+      coordinates: [127.5575446478488, 34.7819711349546],
+      travelLocations: [
+        {
+          center: [108.0, 36.0],
+          zoom: 2.65,
+          pitch: 20,
+          bearing: 8
+        },
+        {
+          center: [122.0, 35.5],
+          zoom: 5.1,
+          pitch: 16,
+          bearing: 4
+        },
+        {
+          center: [127.0, 34.85],
+          zoom: 8.4,
+          pitch: 14,
+          bearing: 0
+        }
+      ],
+      finalLocation: {
+        center: [127.5575446478488, 34.7819711349546],
+        zoom: 15.35,
+        pitch: 14,
+        bearing: 0
+      }
     }
   ],
 
