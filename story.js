@@ -462,78 +462,101 @@
     const finalLocation = selectedHeartRoute.finalLocation;
     const zoomOutEnd = 0.28;
     const arrivalProgress = 0.74;
-    const travelZoom = 2.85;
+    const travelZoom = 3.2;
+    const travelPitch = 14;
+    const travelBearing = -10;
     const finalZoom = finalLocation.zoom;
     const startPitch = startLocation.pitch || 0;
+    const startBearing = startLocation.bearing || 0;
     const finalPitch = finalLocation.pitch || 0;
     const finalBearing = finalLocation.bearing || 0;
 
-    // First: pull back from the user's location once. After this point the
-    // zoom only increases toward the final destination, so route waypoints
-    // cannot make the camera bounce between zooming in and zooming out.
+    // Phase 1 — pull back: rise straight up from the user's location to the
+    // high travel altitude. The center stays put; only the zoom decreases.
     if (progress < zoomOutEnd) {
-      const zoomOutProgress = smoothstep(progress / zoomOutEnd);
+      const t = smoothstep(progress / zoomOutEnd);
 
       return {
         center: startLocation.center,
-        zoom: lerp(startLocation.zoom, travelZoom, zoomOutProgress),
-        pitch: lerp(startPitch, 14, zoomOutProgress),
-        bearing: lerp(startLocation.bearing || 0, -10, zoomOutProgress)
+        zoom: lerp(startLocation.zoom, travelZoom, t),
+        pitch: lerp(startPitch, travelPitch, t),
+        bearing: lerp(startBearing, travelBearing, t)
       };
     }
 
-    const zoomInProgress = smoothstep((progress - zoomOutEnd) / (1 - zoomOutEnd));
-    const zoom = lerp(travelZoom, finalZoom, zoomInProgress);
-    const pitch = lerp(14, finalPitch, zoomInProgress);
-    const bearing = lerp(-10, finalBearing, zoomInProgress);
-
-    // Second: move toward the destination. Route waypoints control only the
-    // center path; zoom, pitch, and bearing stay on the stable curve above.
+    // Phase 2 — cruise: pan along the great-circle arc toward the destination
+    // while holding the pulled-back altitude. Zoom/pitch/bearing stay constant,
+    // so the camera only moves sideways and never zooms during the long flight.
     if (progress < arrivalProgress) {
-      const travelProgress = smoothstep(
+      const t = smoothstep(
         (progress - zoomOutEnd) / (arrivalProgress - zoomOutEnd)
       );
-      const routeTravelLocations = selectedHeartRoute.travelLocations || [];
-      const travelLocations = [
-        {
-          center: startLocation.center
-        },
-        ...routeTravelLocations,
-        {
-          center: finalLocation.center
-        }
-      ];
 
       return {
-        center: interpolateCenterPath(travelLocations, travelProgress),
-        zoom,
-        pitch,
-        bearing
+        center: greatCircleInterpolate(
+          startLocation.center,
+          finalLocation.center,
+          t
+        ),
+        zoom: travelZoom,
+        pitch: travelPitch,
+        bearing: travelBearing
       };
     }
 
-    // Final: keep the destination centered while the same zoom curve continues
-    // into the close-up.
+    // Phase 3 — arrive: now centered over the destination, zoom in to the
+    // close-up. Only here does the zoom increase again.
+    const t = smoothstep((progress - arrivalProgress) / (1 - arrivalProgress));
+
     return {
       center: finalLocation.center,
-      zoom,
-      pitch,
-      bearing
+      zoom: lerp(travelZoom, finalZoom, t),
+      pitch: lerp(travelPitch, finalPitch, t),
+      bearing: lerp(travelBearing, finalBearing, t)
     };
   }
 
-  function interpolateCenterPath(locations, progress) {
-    const scaled = progress * (locations.length - 1);
-    const startIndex = Math.min(Math.floor(scaled), locations.length - 2);
-    const endIndex = startIndex + 1;
-    const t = scaled - startIndex;
-    const start = locations[startIndex];
-    const end = locations[endIndex];
+  // Spherical-linear interpolation (slerp) between two [lng, lat] points along
+  // the shortest great-circle arc. This is the smooth, monotonic "straight
+  // line on a globe" path, so the camera moves directly from start to end with
+  // no sideways doubling back.
+  function greatCircleInterpolate(start, end, progress) {
+    const t = clamp(progress, 0, 1);
+    const toRad = Math.PI / 180;
+    const toDeg = 180 / Math.PI;
 
-    return [
-      lerp(start.center[0], end.center[0], t),
-      lerp(start.center[1], end.center[1], t)
-    ];
+    const lon1 = start[0] * toRad;
+    const lat1 = start[1] * toRad;
+    const lon2 = end[0] * toRad;
+    const lat2 = end[1] * toRad;
+
+    // Project both endpoints onto the unit sphere.
+    const x1 = Math.cos(lat1) * Math.cos(lon1);
+    const y1 = Math.cos(lat1) * Math.sin(lon1);
+    const z1 = Math.sin(lat1);
+    const x2 = Math.cos(lat2) * Math.cos(lon2);
+    const y2 = Math.cos(lat2) * Math.sin(lon2);
+    const z2 = Math.sin(lat2);
+
+    const omega = Math.acos(clamp(x1 * x2 + y1 * y2 + z1 * z2, -1, 1));
+
+    // Endpoints coincide (or are antipodal): nothing meaningful to interpolate.
+    if (omega < 1e-9) {
+      return [start[0], start[1]];
+    }
+
+    const sinOmega = Math.sin(omega);
+    const k1 = Math.sin((1 - t) * omega) / sinOmega;
+    const k2 = Math.sin(t * omega) / sinOmega;
+
+    const x = k1 * x1 + k2 * x2;
+    const y = k1 * y1 + k2 * y2;
+    const z = k1 * z1 + k2 * z2;
+
+    const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
+    const lon = Math.atan2(y, x);
+
+    return [lon * toDeg, lat * toDeg];
   }
 
   function getActiveChapter(progress) {
